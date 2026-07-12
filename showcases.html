@@ -441,6 +441,45 @@
   body[data-device="mobile"] .device-toggle { bottom: 12px; right: 12px; padding: 8px 12px; }
   /* desktop-forced: keep a comfortable min width so layout doesn't collapse on a wide phone */
   body[data-device="desktop"] #viewport { min-width: 900px; }
+
+  /* ============================================================= */
+  /*  "Why it saves money" dismissible note                        */
+  /* ============================================================= */
+  .value-note { margin: -6px 0 18px; }
+  .value-note.dismissed { display: none; }
+  .vn-toggle {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-family: inherit;
+    padding: 9px 15px; border-radius: 999px; font-size: 12.5px; font-weight: 700; letter-spacing: .2px;
+    color: var(--accent2); background: rgba(var(--accent-rgb), 0.1);
+    border: 1px solid rgba(var(--accent-rgb), 0.4); transition: transform .2s var(--ease), background .2s;
+  }
+  .vn-toggle:hover { transform: translateY(-1px); background: rgba(var(--accent-rgb), 0.16); }
+  .vn-toggle .vn-caret { transition: transform .3s var(--ease); font-size: 10px; }
+  .value-note.open .vn-toggle .vn-caret { transform: rotate(180deg); }
+  .vn-body {
+    overflow: hidden; max-height: 0; opacity: 0;
+    transition: max-height .4s var(--ease), opacity .3s, margin .3s;
+    margin-top: 0;
+  }
+  .value-note.open .vn-body { max-height: 240px; opacity: 1; margin-top: 12px; }
+  .vn-inner {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: linear-gradient(180deg, rgba(var(--accent-rgb),0.09), var(--panel));
+    border: 1px solid rgba(var(--accent-rgb), 0.28); border-radius: 16px; padding: 16px 18px;
+    box-shadow: var(--glow);
+  }
+  .vn-inner .vn-ico { font-size: 20px; line-height: 1.4; }
+  .vn-inner .vn-text { flex: 1; }
+  .vn-inner .vn-text strong { display: block; font-size: 13px; margin-bottom: 4px; }
+  .vn-inner .vn-text p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
+  .vn-dismiss {
+    flex-shrink: 0; cursor: pointer; font-family: inherit; align-self: center;
+    border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text);
+    padding: 8px 13px; border-radius: 10px; font-size: 12px; font-weight: 700; transition: all .2s;
+  }
+  .vn-dismiss:hover { border-color: rgba(var(--accent-rgb),0.5); background: rgba(var(--accent-rgb),0.1); }
+  body[data-device="mobile"] .vn-inner { flex-wrap: wrap; }
+  body[data-device="mobile"] .vn-dismiss { width: 100%; }
 </style>
 </head>
 <body>
@@ -1535,6 +1574,43 @@ function gradient(canvas, rgb, h) {
 })();
 
 /* =================================================================
+   "Why it saves money" dismissible notes (one per showcase)
+   ================================================================= */
+const SAVINGS = {
+  motors:  { title: "How RDZ Motors saves money", text: "Spot underperforming lines and downtime the moment they happen — cut scrap and defects, avoid overtime, and hit targets without hours of manual reporting." },
+  climate: { title: "How Room 7 saves money", text: "HVAC is a building's biggest energy cost. It runs only as hard as the room needs — idling when empty, ramping under load — so you cut energy bills while keeping people comfortable." },
+  footfall:{ title: "How Flowcount saves money", text: "Match staffing and opening hours to real demand, optimise layout around peak flow, and prove space usage — so you avoid over-staffing and over-renting." },
+  recycle: { title: "How ReVerra saves money", text: "Higher-purity streams sell for more and dodge contamination penalties; better recovery means lower landfill fees and stronger ESG/regulatory standing." },
+};
+
+function buildValueNotes() {
+  ORDER.forEach(id => {
+    const section = document.getElementById(id);
+    const topbar = section && section.querySelector(".topbar");
+    if (!topbar || section.querySelector(".value-note")) return;
+    const info = SAVINGS[id];
+    const dismissed = (() => { try { return localStorage.getItem("noteDismissed_" + id) === "1"; } catch (e) { return false; } })();
+    const note = document.createElement("div");
+    note.className = "value-note" + (dismissed ? " dismissed" : "");
+    note.dataset.note = id;
+    note.innerHTML =
+      `<button class="vn-toggle" type="button">💡 Why it saves money <span class="vn-caret">▼</span></button>
+       <div class="vn-body"><div class="vn-inner">
+         <span class="vn-ico">💰</span>
+         <div class="vn-text"><strong>${info.title}</strong><p>${info.text}</p></div>
+         <button class="vn-dismiss" type="button">Got it ✕</button>
+       </div></div>`;
+    topbar.insertAdjacentElement("afterend", note);
+    note.querySelector(".vn-toggle").addEventListener("click", () => note.classList.toggle("open"));
+    note.querySelector(".vn-dismiss").addEventListener("click", () => {
+      note.classList.remove("open");
+      note.classList.add("dismissed");
+      try { localStorage.setItem("noteDismissed_" + id, "1"); } catch (e) {}
+    });
+  });
+}
+
+/* =================================================================
    Device selection gate + persistence (widget entry)
    ================================================================= */
 const DEVICE_KEY = "showcaseDevice";
@@ -1584,6 +1660,7 @@ toggleEl && toggleEl.addEventListener("click", openGate);
    ================================================================= */
 buildSwitchers();
 applyTheme("hub");
+buildValueNotes();
 
 // restore remembered device choice, else show the chooser
 let savedDevice = null;
