@@ -389,6 +389,7 @@
         </div>
         <div class="field"><label for="lf-email">Work email</label><input id="lf-email" name="email" type="email" placeholder="you@company.com" required /></div>
         <div class="field"><label for="lf-msg">Anything specific? <span style="color:var(--muted);font-weight:500">(optional)</span></label><textarea id="lf-msg" name="message" placeholder="Tell us about the process, machine or idea…"></textarea></div>
+        <input type="checkbox" name="botcheck" id="lf-botcheck" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
         <button class="btn block" type="submit">Request my proposal →</button>
         <p class="consent">By sending this you agree we may contact you about your enquiry. No spam — a real person replies within one business day.</p>
       </form>
@@ -417,6 +418,14 @@
   /* ---------- Config: pricing model ---------- */
   const COST_RATIO = 0.5;   // project cost ≈ 50% of annual value  →  20k→10k, 50k→25k, 500k→250k
   const PAYBACK_MONTHS = Math.round(COST_RATIO * 12); // ≈ 6 months
+
+  /* ---------- Config: where enquiries are sent ----------
+     Each submission is emailed (an "info pack") to CONTACT_EMAIL via FormSubmit
+     (free, no server, no API key). ONE-TIME STEP: the very first submission triggers an
+     activation email to CONTACT_EMAIL — open it and click the link once, then every
+     future enquiry is delivered automatically. To change where leads go, edit CONTACT_EMAIL. */
+  const CONTACT_EMAIL = "info@ramartsystems.com";
+  const SEND_CUSTOMER_COPY = true; // also emails the customer an automatic info-pack reply
 
   /* ---------- Data ---------- */
   const GOALS = [
@@ -565,23 +574,101 @@
   }));
 
   /* ---------- Lead form ---------- */
-  $("#lead-form").addEventListener("submit", e => {
+  $("#lead-form").addEventListener("submit", async e => {
     e.preventDefault();
+    if ($("#lf-botcheck").checked) return; // honeypot: silently ignore bots
+
     const name = $("#lf-name").value.trim();
+    const company = $("#lf-company").value.trim();
+    const email = $("#lf-email").value.trim();
+    const msg = $("#lf-msg").value.trim();
     const cost = state.savings * COST_RATIO;
-    // NOTE: wire this to your backend / email service / CRM (e.g. info@ramartsystems.com).
-    const payload = {
-      name, company: $("#lf-company").value.trim(), email: $("#lf-email").value.trim(),
-      message: $("#lf-msg").value.trim(),
-      goals: state.goals, annualValue: state.savings, indicativeCost: Math.round(cost),
-      timeline: state.time,
+    const goalsText = (state.goals.length ? state.goals : ["(not specified)"])
+      .map(k => (GOALS.find(g => g.key === k) || {}).title || k).join(", ");
+    const timeText = (TIMES.find(t => t.key === state.time) || {}).title || "(not specified)";
+
+    /* The "info pack" — a clean, readable summary of the enquiry. */
+    const subject = `New project enquiry — ${company || name || "website"}`;
+    const summary =
+`New project enquiry from the website estimator
+
+Name:     ${name}
+Company:  ${company}
+Email:    ${email}
+
+Focus areas:            ${goalsText}
+Estimated annual value: ${eur(state.savings)}
+Indicative investment:  ${eur(cost)} + VAT
+Payback:                ~${PAYBACK_MONTHS} months
+Preferred timeline:     ${timeText}
+
+Message:
+${msg || "(none)"}
+`;
+
+    const showSuccess = () => {
+      $("#success-title").textContent = "Thanks" + (name ? ", " + name.split(" ")[0] : "") + " — talk soon!";
+      $("#success-msg").textContent =
+        `We've got your details and an indicative investment of ≈ ${eur(cost)} + VAT. ` +
+        `A specialist will reply within one business day with a tailored, fixed-price proposal.`;
+      goStep(5);
     };
-    console.log("Lead captured →", payload);
-    $("#success-title").textContent = "Thanks" + (name ? ", " + name.split(" ")[0] : "") + " — talk soon!";
-    $("#success-msg").textContent =
-      `We've got your details and an indicative investment of ≈ ${eur(cost)} + VAT. ` +
-      `A specialist will reply within one business day with a tailored, fixed-price proposal.`;
-    goStep(5);
+    const showFallback = () => {
+      const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(summary)}`;
+      $("#success-title").textContent = "Almost there — one tap to send";
+      $("#success-msg").innerHTML =
+        `We couldn't send automatically just now. ` +
+        `<a href="${mailto}" style="color:var(--navy);font-weight:800;text-decoration:underline">Click here to email us your enquiry</a> ` +
+        `(≈ ${eur(cost)} + VAT), or write to <b>${CONTACT_EMAIL}</b>.`;
+      goStep(5);
+    };
+
+    const btn = $('#lead-form button[type="submit"]');
+    const original = btn.textContent;
+    btn.disabled = true; btn.textContent = "Sending…";
+
+    const fields = {
+      _subject: subject,
+      _template: "table",
+      _captcha: "false",
+      name, company, email,
+      focus_areas: goalsText,
+      estimated_annual_value: eur(state.savings),
+      indicative_investment: eur(cost) + " + VAT",
+      payback: "~" + PAYBACK_MONTHS + " months",
+      timeline: timeText,
+      message: summary,
+    };
+    if (SEND_CUSTOMER_COPY) {
+      fields._autoresponse =
+        `Hi ${name || "there"},\n\n` +
+        `Thank you for your enquiry to Ramart Systems — the world's first full-stack IT service with integrated automation and AI.\n\n` +
+        `Here's your indicative info pack:\n` +
+        `• Estimated annual value: ${eur(state.savings)}\n` +
+        `• Indicative investment: ${eur(cost)} + VAT (turnkey, fixed-price)\n` +
+        `• Typical payback: ~${PAYBACK_MONTHS} months\n` +
+        `• Preferred timeline: ${timeText}\n` +
+        `• Focus areas: ${goalsText}\n\n` +
+        `This is indicative only — we'll confirm a fixed price after a short, free discovery call. ` +
+        `A specialist will be in touch within one business day.\n\n` +
+        `Warm regards,\nRamart Systems\n${CONTACT_EMAIL}`;
+    }
+
+    try {
+      const res = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(CONTACT_EMAIL), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(fields),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!(res.ok && (data.success === true || data.success === "true"))) throw new Error(data.message || "send failed");
+      showSuccess();
+    } catch (err) {
+      console.error("Enquiry send failed:", err);
+      showFallback();
+    } finally {
+      btn.disabled = false; btn.textContent = original;
+    }
   });
   $("#restart-btn").addEventListener("click", () => {
     state.goals = []; state.time = null; range.value = 20000; paintSlider();
