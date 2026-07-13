@@ -209,6 +209,48 @@
 
   footer { color: var(--muted); font-size: 12px; text-align: center; margin-top: 26px; }
   .hidden { display: none !important; }
+
+  /* ---------- Mobile (portrait, no horizontal tilt needed) ---------- */
+  @media (max-width: 700px) {
+    html, body { overflow-x: hidden; }
+    body { padding: 16px 14px; }
+
+    header {
+      flex-direction: column; align-items: stretch; gap: 14px;
+      margin-bottom: 20px; padding-bottom: 18px;
+    }
+    .brand { gap: 14px; }
+    .logo { width: 50px; height: 50px; font-size: 18px; }
+    .brand h1 { font-size: 19px; }
+    .header-right { width: 100%; justify-content: space-between; }
+    .clock { text-align: right; }
+    .clock .time { font-size: 22px; }
+
+    /* Controls stack and fill the width for big tap targets */
+    .controls { flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 20px; }
+    .tabs { width: 100%; justify-content: stretch; }
+    .tabs .tab { flex: 1; padding: 14px 6px; font-size: 14px; text-align: center; }
+    .actions { width: 100%; }
+    .actions .btn { flex: 1; justify-content: center; padding: 14px; font-size: 14px; }
+
+    /* KPIs: one big card per row */
+    .kpis { grid-template-columns: 1fr; gap: 14px; margin-bottom: 20px; }
+    .kpi .value { font-size: 34px; }
+    .kpi .label { font-size: 13px; }
+
+    /* Charts stacked and taller so they read well on a phone */
+    .grid { grid-template-columns: 1fr; gap: 14px; }
+    .chart-box { height: 320px; }
+    .chart-box.small { height: 300px; }
+
+    .card { padding: 18px 16px; }
+    .chips { gap: 8px; }
+    .chip { padding: 9px 15px; font-size: 13px; }
+
+    /* Table stays swipeable inside its own scroll area */
+    .table-scroll { max-height: none; -webkit-overflow-scrolling: touch; }
+    th, td { padding: 12px 10px; font-size: 13px; }
+  }
 </style>
 </head>
 <body>
@@ -313,9 +355,10 @@ let liveInterval;
 /* ------------------------------------------------------------------ */
 function tickClock() {
   const now = new Date();
-  document.getElementById("clock-time").textContent = now.toLocaleTimeString();
+  document.getElementById("clock-time").textContent =
+    now.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit", second:"2-digit", hour12:true });
   document.getElementById("clock-date").textContent =
-    now.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+    now.toLocaleDateString("en-US", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
 }
 setInterval(tickClock, 1000); tickClock();
 

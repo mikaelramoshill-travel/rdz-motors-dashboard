@@ -342,6 +342,61 @@
   .bin .b-count { font-size: 20px; font-weight: 800; margin-top: 4px; font-variant-numeric: tabular-nums; }
 
   /* ============================================================= */
+  /*  SupportPilot — live conversation stream                     */
+  /* ============================================================= */
+  .stream-wrap { position: relative; height: 320px; overflow: hidden; border-radius: 16px;
+    background: linear-gradient(180deg, #0b0f17, #080b11); border: 1px solid var(--border); padding: 12px; }
+  .stream-wrap::after { content:""; position:absolute; left:0; right:0; bottom:0; height:56px; pointer-events:none;
+    background: linear-gradient(180deg, transparent, #080b11); }
+  .msg { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; margin-bottom: 10px;
+    border-radius: 13px; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    animation: msgIn .5s var(--ease); }
+  @keyframes msgIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+  .msg .m-ch { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-size: 19px; flex-shrink: 0;
+    background: rgba(var(--accent-rgb), 0.14); border: 1px solid rgba(var(--accent-rgb), 0.3); }
+  .msg .m-body { flex: 1; min-width: 0; }
+  .msg .m-top { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; margin-bottom: 5px; }
+  .msg .m-who { font-size: 13px; font-weight: 700; }
+  .msg .m-text { font-size: 13px; color: var(--muted); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-tag { font-size: 10px; font-weight: 700; letter-spacing: .3px; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .m-cat { background: rgba(255,255,255,0.06); color: #cbd5e1; border: 1px solid var(--border); }
+  .s-pos { background: rgba(52,211,153,.16); color: #6ee7b7; }
+  .s-neu { background: rgba(148,163,184,.16); color: #cbd5e1; }
+  .s-neg { background: rgba(244,63,94,.16); color: #fb7185; }
+  .m-ai  { background: rgba(var(--accent-rgb),.18); color: var(--accent2); border: 1px solid rgba(var(--accent-rgb),.35); }
+  .m-agent { background: rgba(251,191,36,.16); color: #fcd34d; }
+
+  /* ============================================================= */
+  /*  HydroGuard — pipe network schematic                         */
+  /* ============================================================= */
+  .net-wrap { position: relative; height: 340px; border-radius: 16px; overflow: hidden;
+    background: radial-gradient(120% 120% at 50% 30%, rgba(14,165,233,0.06), transparent 70%), #070d13;
+    border: 1px solid var(--border); }
+  .net-wrap svg { width: 100%; height: 100%; display: block; }
+  .pipe { fill: none; stroke: rgba(14,165,233,0.22); stroke-width: 8; stroke-linecap: round; }
+  .pipe-flow { fill: none; stroke: var(--accent2); stroke-width: 3.4; stroke-linecap: round;
+    stroke-dasharray: 8 11; animation: flowdash 1s linear infinite; }
+  @keyframes flowdash { to { stroke-dashoffset: -19; } }
+  .node-tag { position: absolute; transform: translate(-50%,-50%); display: flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,.5);
+    border: 1px solid var(--border); backdrop-filter: blur(4px); white-space: nowrap; transition: color .4s, border-color .4s; }
+  .node-tag b { font-variant-numeric: tabular-nums; color: var(--accent2); }
+  .node-tag.leak { color: #fb7185; border-color: rgba(244,63,94,.6); animation: leakpulse 1.4s infinite; }
+  .node-tag.leak b { color: #fb7185; }
+  @keyframes leakpulse {
+    0% { box-shadow: 0 0 0 0 rgba(244,63,94,.6); }
+    70% { box-shadow: 0 0 0 12px rgba(244,63,94,0); }
+    100% { box-shadow: 0 0 0 0 rgba(244,63,94,0); }
+  }
+  .net-banner { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 4;
+    display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700;
+    padding: 7px 15px; border-radius: 999px; background: rgba(0,0,0,.55); border: 1px solid var(--border);
+    backdrop-filter: blur(6px); white-space: nowrap; transition: color .4s, border-color .4s; }
+  .net-banner .nb-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); box-shadow: 0 0 8px rgba(14,165,233,.8); }
+  .net-banner.alert { color: #fb7185; border-color: rgba(244,63,94,.5); }
+  .net-banner.alert .nb-dot { background: #fb7185; box-shadow: 0 0 10px rgba(244,63,94,.9); }
+
+  /* ============================================================= */
   /*  Device selection gate (widget entry)                         */
   /* ============================================================= */
   .device-gate {
@@ -418,27 +473,39 @@
   body[data-device="mobile"] .brand p { display: none; }
   body[data-device="mobile"] .logo { width: 42px; height: 42px; font-size: 17px; border-radius: 12px; }
   body[data-device="mobile"] .clock { display: none; }
-  body[data-device="mobile"] .tb-right { gap: 10px; width: 100%; justify-content: space-between; }
-  body[data-device="mobile"] .switcher button { width: 44px; height: 40px; font-size: 18px; }
-  body[data-device="mobile"] .kpis { grid-template-columns: 1fr 1fr; gap: 10px; }
-  body[data-device="mobile"] .kpi .value { font-size: 22px; }
-  body[data-device="mobile"] .kpi .label { font-size: 10px; letter-spacing: .4px; }
+  body[data-device="mobile"] .tb-right { gap: 12px; width: 100%; justify-content: space-between; }
+  body[data-device="mobile"] .switcher button { width: 52px; height: 46px; font-size: 21px; }
+  /* Fully vertical, single-column layout with large, readable cards */
+  body[data-device="mobile"] .kpis { grid-template-columns: 1fr; gap: 14px; }
+  body[data-device="mobile"] .kpi .value { font-size: 34px; }
+  body[data-device="mobile"] .kpi .label { font-size: 13px; letter-spacing: .6px; }
+  body[data-device="mobile"] .kpi .sub { font-size: 13px; }
   body[data-device="mobile"] .grid2,
-  body[data-device="mobile"] .grid-eq { grid-template-columns: 1fr; gap: 12px; }
-  body[data-device="mobile"] .card { padding: 15px; border-radius: 15px; }
-  body[data-device="mobile"] .chart-box { height: 220px; }
-  body[data-device="mobile"] .chart-box.small { height: 200px; }
-  body[data-device="mobile"] .room-wrap { height: 300px; }
-  body[data-device="mobile"] .gauges { grid-template-columns: 1fr 1fr; }
-  body[data-device="mobile"] .gate-wrap { height: 120px; }
-  body[data-device="mobile"] .belt-wrap { height: 180px; }
-  body[data-device="mobile"] .bins { grid-template-columns: repeat(5, 1fr); gap: 5px; padding: 10px; }
-  body[data-device="mobile"] .bin { padding: 8px 3px; }
-  body[data-device="mobile"] .bin .b-ico { font-size: 17px; }
-  body[data-device="mobile"] .bin .b-name { font-size: 8px; }
-  body[data-device="mobile"] .bin .b-count { font-size: 15px; }
+  body[data-device="mobile"] .grid-eq { grid-template-columns: 1fr; gap: 16px; }
+  body[data-device="mobile"] .card { padding: 20px 18px; border-radius: 16px; }
+  body[data-device="mobile"] .panel-title h3 { font-size: 17px; }
+  body[data-device="mobile"] .chart-box { height: 320px; }
+  body[data-device="mobile"] .chart-box.small { height: 300px; }
+  body[data-device="mobile"] .room-wrap { height: 340px; }
+  /* Gauges stack one-per-row so figures stay large */
+  body[data-device="mobile"] .gauges { grid-template-columns: 1fr; gap: 18px; }
+  body[data-device="mobile"] .gauge .g-val { font-size: 36px; }
+  body[data-device="mobile"] .gate-wrap { height: 150px; }
+  body[data-device="mobile"] .belt-wrap { height: 200px; }
+  body[data-device="mobile"] .bins { grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 12px; }
+  body[data-device="mobile"] .bin { padding: 10px 4px; }
+  body[data-device="mobile"] .bin .b-ico { font-size: 19px; }
+  body[data-device="mobile"] .bin .b-name { font-size: 9px; }
+  body[data-device="mobile"] .bin .b-count { font-size: 17px; }
+  /* Tabs become full-width, evenly split, easy-to-tap targets */
   body[data-device="mobile"] .tabs { width: 100%; overflow-x: auto; }
-  body[data-device="mobile"] .device-toggle { bottom: 12px; right: 12px; padding: 8px 12px; }
+  body[data-device="mobile"] .tabs .tab { flex: 1; min-width: max-content; padding: 13px 16px; font-size: 14px; }
+  body[data-device="mobile"] th,
+  body[data-device="mobile"] td { padding: 12px 10px; font-size: 13px; }
+  body[data-device="mobile"] .switcher { overflow-x: auto; max-width: 100%; }
+  body[data-device="mobile"] .stream-wrap { height: 300px; }
+  body[data-device="mobile"] .net-wrap { height: 300px; }
+  body[data-device="mobile"] .device-toggle { bottom: 14px; right: 14px; padding: 10px 14px; font-size: 13px; }
   /* desktop-forced: keep a comfortable min width so layout doesn't collapse on a wide phone */
   body[data-device="desktop"] #viewport { min-width: 900px; }
 
@@ -507,7 +574,7 @@
       <div class="hub-head">
         <div class="eyebrow">Live Automation Suite</div>
         <h1>Showcase Gallery</h1>
-        <p>Four self-contained automation demos. Pick one to open a live, animated operations dashboard.</p>
+        <p>Six self-contained automation demos. Pick one to open a live, animated operations dashboard.</p>
       </div>
 
       <div class="hub-grid">
@@ -548,6 +615,26 @@
           </div>
           <div class="sc-desc">Automated sorting line — watch items separate into five material streams while the dashboard tracks throughput, purity and recovery.</div>
           <div class="sc-tags"><span>Sorting Line</span><span>Recovery Rate</span><span>Live Feed</span></div>
+          <div class="sc-go">→</div>
+        </div>
+
+        <div class="show-card" data-open="support" style="--cardrgb:99,102,241;">
+          <div class="sc-top">
+            <div class="sc-ico">🎧</div>
+            <div><h2>SupportPilot</h2><div class="co">AI Contact Center</div></div>
+          </div>
+          <div class="sc-desc">Live support desk with an LLM copilot — incoming chats, emails and calls are auto-classified, sentiment-scored and deflected or routed in real time.</div>
+          <div class="sc-tags"><span>LLM Triage</span><span>Sentiment</span><span>Auto-Deflection</span></div>
+          <div class="sc-go">→</div>
+        </div>
+
+        <div class="show-card" data-open="hydro" style="--cardrgb:14,165,233;">
+          <div class="sc-top">
+            <div class="sc-ico">💧</div>
+            <div><h2>HydroGuard</h2><div class="co">Water Network Monitoring</div></div>
+          </div>
+          <div class="sc-desc">Live distribution-network map with flow &amp; pressure sensors — AI spots leaks and pressure anomalies, then dispatches crews automatically.</div>
+          <div class="sc-tags"><span>IoT / SCADA</span><span>Leak Detection</span><span>Predictive</span></div>
           <div class="sc-go">→</div>
         </div>
       </div>
@@ -757,6 +844,100 @@
     </div>
   </section>
 
+  <!-- ==================== SUPPORTPILOT SHOWCASE ================= -->
+  <section id="support" class="view">
+    <div class="wrap">
+      <div class="topbar">
+        <div class="tb-left">
+          <div class="back-btn" data-back>← Gallery</div>
+          <div class="brand">
+            <div class="logo">SP</div>
+            <div><h1>SupportPilot <span class="thin">AI Contact Center</span></h1><p>Live Support Ops · AI Copilot</p></div>
+          </div>
+        </div>
+        <div class="tb-right">
+          <div class="switcher" data-switcher></div>
+          <div class="live-pill"><span class="dot"></span> LIVE QUEUE</div>
+          <div class="clock"><div class="time mono" data-clock-time>--:--:--</div><div class="date" data-clock-date>—</div></div>
+        </div>
+      </div>
+
+      <div class="kpis" id="s-kpis"></div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="panel-title"><h3>Live Conversation Stream</h3><span id="s-stream-sub">AI triage active</span></div>
+        <div class="stream-wrap" id="s-stream"></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="panel-title"><h3>Volume vs AI-Handled</h3><span>rolling · per interval</span></div>
+          <div class="chart-box"><canvas id="s-vol"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="panel-title"><h3>Intent Mix</h3><span>auto-classified</span></div>
+          <div class="chart-box small"><canvas id="s-intent"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid-eq">
+        <div class="card">
+          <div class="panel-title"><h3>Sentiment Trend</h3><span>live customer mood</span></div>
+          <div class="chart-box"><canvas id="s-sent"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="panel-title"><h3>Channel Mix</h3><span>where tickets arrive</span></div>
+          <div class="chart-box small"><canvas id="s-chan"></canvas></div>
+        </div>
+      </div>
+      <footer>SupportPilot · LLM triage → sentiment, intent &amp; auto-draft · simulated live stream</footer>
+    </div>
+  </section>
+
+  <!-- ==================== HYDROGUARD SHOWCASE =================== -->
+  <section id="hydro" class="view">
+    <div class="wrap">
+      <div class="topbar">
+        <div class="tb-left">
+          <div class="back-btn" data-back>← Gallery</div>
+          <div class="brand">
+            <div class="logo">HG</div>
+            <div><h1>HydroGuard <span class="thin">Network Monitoring</span></h1><p>Water Utility · Leak Intelligence</p></div>
+          </div>
+        </div>
+        <div class="tb-right">
+          <div class="switcher" data-switcher></div>
+          <div class="live-pill"><span class="dot"></span> NETWORK LIVE</div>
+          <div class="clock"><div class="time mono" data-clock-time>--:--:--</div><div class="date" data-clock-date>—</div></div>
+        </div>
+      </div>
+
+      <div class="kpis" id="h-kpis"></div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="panel-title"><h3>Distribution Network — Live</h3><span id="h-net-sub">all zones nominal</span></div>
+        <div class="net-wrap" id="h-net"></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="panel-title"><h3>Flow &amp; Pressure</h3><span>trunk main · rolling</span></div>
+          <div class="chart-box"><canvas id="h-flow"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="panel-title"><h3>Zone Consumption</h3><span>live demand</span></div>
+          <div class="chart-box small"><canvas id="h-zones"></canvas></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panel-title"><h3>Pump Efficiency &amp; Non-Revenue Water</h3><span>rolling</span></div>
+        <div class="chart-box small"><canvas id="h-nrw"></canvas></div>
+      </div>
+      <footer>HydroGuard · SCADA + AI anomaly detection · predictive leak dispatch · simulated live telemetry</footer>
+    </div>
+  </section>
+
 </div>
 
 <script>
@@ -769,13 +950,17 @@ const THEMES = {
   climate:  { accent:"#22d3ee", accent2:"#67e8f9", rgb:"34,211,238" },
   footfall: { accent:"#f59e0b", accent2:"#fbbf24", rgb:"245,158,11" },
   recycle:  { accent:"#34d399", accent2:"#6ee7b7", rgb:"52,211,153" },
+  support:  { accent:"#6366f1", accent2:"#a5b4fc", rgb:"99,102,241" },
+  hydro:    { accent:"#0ea5e9", accent2:"#38bdf8", rgb:"14,165,233" },
 };
-const ORDER = ["motors","climate","footfall","recycle"];
+const ORDER = ["motors","climate","footfall","recycle","support","hydro"];
 const META = {
   motors:  { ico:"🏭", name:"RDZ Motors" },
   climate: { ico:"🌡️", name:"Meridian Room 7" },
   footfall:{ ico:"🚶", name:"Flowcount" },
   recycle: { ico:"♻️", name:"ReVerra" },
+  support: { ico:"🎧", name:"SupportPilot" },
+  hydro:   { ico:"💧", name:"HydroGuard" },
 };
 
 function applyTheme(id) {
@@ -863,8 +1048,8 @@ const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(
 
 function updateClocks() {
   const now = new Date();
-  const t = now.toLocaleTimeString();
-  const d = now.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+  const t = now.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit", second:"2-digit", hour12:true });
+  const d = now.toLocaleDateString("en-US", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
   document.querySelectorAll("[data-clock-time]").forEach(e => e.textContent = t);
   document.querySelectorAll("[data-clock-date]").forEach(e => e.textContent = d);
 }
@@ -1574,6 +1759,348 @@ function gradient(canvas, rgb, h) {
 })();
 
 /* =================================================================
+   MODULE 5 — SupportPilot AI contact center
+   ================================================================= */
+(function () {
+  const CHANNELS = [
+    { key:"chat",   name:"Live Chat", ico:"💬", w:0.40 },
+    { key:"email",  name:"Email",     ico:"✉️", w:0.28 },
+    { key:"voice",  name:"Voice",     ico:"📞", w:0.20 },
+    { key:"social", name:"Social",    ico:"📱", w:0.12 },
+  ];
+  const INTENTS = [
+    { key:"billing",  name:"Billing",   col:"#6366f1", aiEasy:0.72 },
+    { key:"tech",     name:"Technical", col:"#22d3ee", aiEasy:0.45 },
+    { key:"account",  name:"Account",   col:"#a78bfa", aiEasy:0.82 },
+    { key:"refund",   name:"Refund",    col:"#f59e0b", aiEasy:0.5  },
+    { key:"howto",    name:"How-to",    col:"#34d399", aiEasy:0.9  },
+    { key:"complaint",name:"Complaint", col:"#f43f5e", aiEasy:0.2  },
+  ];
+  const SAMPLES = {
+    billing:  ["Why was I charged twice this month?", "Can I get an invoice for July?", "My plan price went up unexpectedly."],
+    tech:     ["The dashboard won't load on mobile.", "API returns a 500 on export.", "Login keeps timing out."],
+    account:  ["How do I add a teammate?", "I need to reset my password.", "Please change the email on my account."],
+    refund:   ["I'd like a refund for my last order.", "Item arrived damaged, need a refund.", "Cancel and refund my plan please."],
+    howto:    ["How do I schedule a report?", "Where can I export my data?", "How do I connect my calendar?"],
+    complaint:["This is the third time it's broken!", "Really unhappy with the wait times.", "Nobody has replied in two days."],
+  };
+  const NAMES = ["A. Rivera","J. Chen","M. Okafor","S. Patel","L. Meyer","D. Costa","R. Haddad","K. Novak","T. Ibrahim","E. Larsson"];
+
+  const counts = { total:0, aiResolved:0, agent:0, resolved:0 };
+  const intentCount = {}; INTENTS.forEach(i => intentCount[i.key] = 0);
+  const chanCount = {};   CHANNELS.forEach(c => chanCount[c.key] = 0);
+  const sentCount = { pos:0, neu:0, neg:0 };
+  let queue = 7, openTickets = 34;
+  let volChart, intentChart, sentChart, chanChart, feedTimer, statTimer;
+  const volHist = [], aiHist = [], sLabels = [], sentHist = [];
+  let volAcc = 0, aiAcc = 0;
+
+  function weightedPick(arr) {
+    let x = srandom(), acc = 0;
+    for (const a of arr) { acc += a.w; if (x <= acc) return a; }
+    return arr[arr.length-1];
+  }
+  const evenPick = arr => arr[Math.floor(srandom()*arr.length)];
+
+  function addMessage() {
+    const stream = document.getElementById("s-stream");
+    if (!stream) return;
+    const ch = weightedPick(CHANNELS);
+    const intent = evenPick(INTENTS);
+    const sr = srandom();
+    const negP = intent.key === "complaint" ? 0.62 : intent.key === "refund" ? 0.4 : 0.16;
+    const neuP = intent.key === "complaint" ? 0.85 : 0.55;
+    const sentiment = sr < negP ? "neg" : sr < neuP ? "neu" : "pos";
+    const text = evenPick(SAMPLES[intent.key]);
+    const name = evenPick(NAMES);
+    const aiHandles = sentiment !== "neg" && srandom() < intent.aiEasy;
+
+    counts.total++; intentCount[intent.key]++; chanCount[ch.key]++; sentCount[sentiment]++;
+    if (aiHandles) { counts.aiResolved++; counts.resolved++; aiAcc++; }
+    else { counts.agent++; openTickets++; }
+    volAcc++;
+    queue = clamp(queue + (aiHandles ? 0 : 1) - (srandom() < 0.5 ? 1 : 0), 0, 40);
+
+    const sBadge = sentiment === "pos" ? `<span class="m-tag s-pos">😊 Positive</span>`
+                 : sentiment === "neu" ? `<span class="m-tag s-neu">😐 Neutral</span>`
+                 : `<span class="m-tag s-neg">😟 Negative</span>`;
+    const aiBadge = aiHandles ? `<span class="m-tag m-ai">🤖 AI auto-resolved</span>`
+                              : `<span class="m-tag m-agent">👤 Routed to agent</span>`;
+    const el = document.createElement("div");
+    el.className = "msg";
+    el.innerHTML =
+      `<div class="m-ch">${ch.ico}</div>
+       <div class="m-body">
+         <div class="m-top"><span class="m-who">${name}</span>
+           <span class="m-tag m-cat">${intent.name}</span>${sBadge}${aiBadge}</div>
+         <div class="m-text">${text}</div>
+       </div>`;
+    stream.prepend(el);
+    while (stream.children.length > 7) stream.lastChild.remove();
+  }
+
+  function renderKPIs() {
+    const deflection = counts.total ? counts.aiResolved / counts.total * 100 : 0;
+    const totalSent = sentCount.pos + sentCount.neu + sentCount.neg || 1;
+    const csat = (sentCount.pos*100 + sentCount.neu*70 + sentCount.neg*20) / totalSent;
+    const avgResp = clamp(18 + queue*1.4 - deflection*0.12, 6, 90);
+    const cards = [
+      { i:"📥", l:"Live Queue", v:queue, s:"waiting now", c: queue>15?"down":"up" },
+      { i:"🎫", l:"Open Tickets", v:fmt(openTickets), s:"in progress", c:"" },
+      { i:"⏱️", l:"Avg Response", v:Math.round(avgResp)+" s", s:"first reply", c: avgResp<25?"up":"" },
+      { i:"🤖", l:"AI Deflection", v:deflection.toFixed(0)+"%", s:"handled by AI", c:"up" },
+      { i:"😊", l:"CSAT (live)", v:csat.toFixed(0)+"%", s:"from sentiment", c: csat>75?"up":"down" },
+      { i:"✅", l:"Resolved Today", v:fmt(counts.resolved), s:"AI + agents", c:"up" },
+    ];
+    let html = cards.map(c => `<div class="card kpi"><div class="label"><span class="icon">${c.i}</span> ${c.l}</div>
+      <div class="value">${c.v}</div><div class="sub ${c.c}">${c.s}</div></div>`).join("");
+    html += `<div class="card kpi live"><div class="label"><span class="icon">🧠</span> AI Copilot</div>
+      <div class="value" style="font-size:22px">ACTIVE</div><div class="sub up">LLM triage &amp; drafting</div></div>`;
+    document.getElementById("s-kpis").innerHTML = html;
+  }
+
+  function buildCharts() {
+    if (!HAS_CHART) return;
+    const v = document.getElementById("s-vol");
+    volChart = new Chart(v, { type:"line",
+      data:{ labels:sLabels, datasets:[
+        { label:"Incoming", data:volHist, borderColor:cssVar("--accent"), backgroundColor:gradient(v,"99,102,241"), fill:true, tension:.35, borderWidth:2, pointRadius:0 },
+        { label:"AI-handled", data:aiHist, borderColor:"#34d399", tension:.35, borderWidth:2, pointRadius:0 },
+      ]},
+      options: baseOpts({ scales:{ x:{ ticks:{display:false}, grid:{color:"rgba(255,255,255,0.04)"} }, y:{ beginAtZero:true, ticks:{color:"#9a95ad"}, grid:{color:"rgba(255,255,255,0.06)"} } } }) });
+
+    const i = document.getElementById("s-intent");
+    intentChart = new Chart(i, { type:"doughnut",
+      data:{ labels:INTENTS.map(x=>x.name), datasets:[{ data:INTENTS.map(x=>intentCount[x.key]||1), backgroundColor:INTENTS.map(x=>x.col), borderColor:"#14101f", borderWidth:3, hoverOffset:8 }] },
+      options:{ responsive:true, maintainAspectRatio:false, cutout:"58%", plugins:{ legend:{ position:"bottom", labels:{ padding:10, usePointStyle:true, font:{size:11} } } } } });
+
+    const s = document.getElementById("s-sent");
+    sentChart = new Chart(s, { type:"line",
+      data:{ labels:sLabels, datasets:[
+        { label:"CSAT index", data:sentHist, borderColor:"#22d3ee", backgroundColor:gradient(s,"34,211,238"), fill:true, tension:.4, borderWidth:2.5, pointRadius:0 },
+      ]},
+      options: baseOpts({ plugins:{ legend:{display:false} }, scales:{ x:{ ticks:{display:false}, grid:{color:"rgba(255,255,255,0.04)"} }, y:{ suggestedMin:0, suggestedMax:100, ticks:{color:"#9a95ad"}, grid:{color:"rgba(255,255,255,0.06)"} } } }) });
+
+    const c = document.getElementById("s-chan");
+    chanChart = new Chart(c, { type:"doughnut",
+      data:{ labels:CHANNELS.map(x=>x.name), datasets:[{ data:CHANNELS.map(x=>chanCount[x.key]||1), backgroundColor:["#6366f1","#a78bfa","#22d3ee","#f59e0b"], borderColor:"#14101f", borderWidth:3, hoverOffset:8 }] },
+      options:{ responsive:true, maintainAspectRatio:false, cutout:"58%", plugins:{ legend:{ position:"bottom", labels:{ padding:10, usePointStyle:true, font:{size:11} } } } } });
+  }
+
+  function tickStats() {
+    renderKPIs();
+    if (!HAS_CHART) return;
+    const totalSent = sentCount.pos + sentCount.neu + sentCount.neg || 1;
+    sLabels.push(""); volHist.push(volAcc); aiHist.push(aiAcc);
+    sentHist.push(+((sentCount.pos*100 + sentCount.neu*70 + sentCount.neg*20) / totalSent).toFixed(1));
+    volAcc = 0; aiAcc = 0;
+    if (sLabels.length > 40) { sLabels.shift(); volHist.shift(); aiHist.shift(); sentHist.shift(); }
+    if (volChart) { volChart.data.labels=sLabels; volChart.data.datasets[0].data=volHist; volChart.data.datasets[1].data=aiHist; volChart.update("none"); }
+    if (sentChart) { sentChart.data.labels=sLabels; sentChart.data.datasets[0].data=sentHist; sentChart.update("none"); }
+    if (intentChart) { intentChart.data.datasets[0].data=INTENTS.map(x=>intentCount[x.key]||0); intentChart.update("none"); }
+    if (chanChart) { chanChart.data.datasets[0].data=CHANNELS.map(x=>chanCount[x.key]||0); chanChart.update("none"); }
+  }
+
+  MODULES.support = {
+    enter() {
+      const stream = document.getElementById("s-stream"); if (stream) stream.innerHTML = "";
+      if (sLabels.length === 0) {
+        for (let k=0;k<6;k++) { sLabels.push(""); volHist.push(Math.round(rand(3,7))); aiHist.push(Math.round(rand(1,4))); sentHist.push(+rand(70,88).toFixed(1)); }
+      }
+      for (let k=0;k<4;k++) addMessage();
+      renderKPIs(); buildCharts();
+      feedTimer = setInterval(addMessage, 1600);
+      statTimer = setInterval(tickStats, 1500);
+    },
+    leave() {
+      clearInterval(feedTimer); clearInterval(statTimer);
+      [volChart, intentChart, sentChart, chanChart].forEach(c => { if (c) c.destroy(); });
+      volChart = intentChart = sentChart = chanChart = null;
+    },
+  };
+})();
+
+/* =================================================================
+   MODULE 6 — HydroGuard water network monitoring
+   ================================================================= */
+(function () {
+  const ZONES = [
+    { key:"north",   name:"North",   x:620, y:70,  base:64 },
+    { key:"central", name:"Central", x:500, y:160, base:88 },
+    { key:"east",    name:"East",    x:730, y:160, base:52 },
+    { key:"south",   name:"South",   x:620, y:250, base:71 },
+  ];
+  const PIPES = [
+    "M70,160 L200,160",             // reservoir -> pump
+    "M200,160 L340,160",            // pump -> junction
+    "M340,160 L470,70 L620,70",     // -> north
+    "M340,160 L470,250 L620,250",   // -> south
+    "M340,160 L500,160 L730,160",   // -> central -> east
+  ];
+  let flowChart, zoneChart, nrwChart, timer, built = false;
+  let elapsed = 0, totalFlow = 0, avgPressure = 6.2, nrw = 6.5, pumpEff = 88, activeLeaks = 0;
+  const flowHist = [], presHist = [], nrwHist = [], effHist = [], labels = [];
+  const zoneFlow = {}; ZONES.forEach(z => zoneFlow[z.key] = z.base);
+  let leakZone = null, leakTimer = 0, leakState = "none", bannerText = "Monitoring all zones";
+
+  function addTag(wrap, fx, fy, html) {
+    const t = document.createElement("div");
+    t.className = "node-tag";
+    t.style.left = (fx*100)+"%"; t.style.top = (fy*100)+"%";
+    t.innerHTML = html;
+    wrap.appendChild(t);
+    return t;
+  }
+
+  function build() {
+    if (built) return;
+    const wrap = document.getElementById("h-net");
+    wrap.innerHTML = "";
+    const banner = document.createElement("div");
+    banner.className = "net-banner"; banner.id = "h-banner";
+    banner.innerHTML = `<span class="nb-dot"></span><span id="h-banner-text">Monitoring all zones</span>`;
+    wrap.appendChild(banner);
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 800 320");
+    svg.setAttribute("preserveAspectRatio", "none");
+    let inner = "";
+    PIPES.forEach(d => {
+      inner += `<path class="pipe" d="${d}" vector-effect="non-scaling-stroke"></path>`;
+      inner += `<path class="pipe-flow" d="${d}" vector-effect="non-scaling-stroke"></path>`;
+    });
+    svg.innerHTML = inner;
+    wrap.appendChild(svg);
+
+    addTag(wrap, 70/800, 160/320, `🛢️ Reservoir`);
+    addTag(wrap, 200/800, 160/320, `⚙️ Pump <b id="h-pump">88%</b>`);
+    ZONES.forEach(z => {
+      const t = addTag(wrap, z.x/800, z.y/320, `💧 ${z.name} <b data-zoneflow="${z.key}">${z.base}</b> L/s`);
+      t.dataset.zone = z.key;
+    });
+    built = true;
+  }
+
+  function startLeak() {
+    const z = ZONES[Math.floor(srandom()*ZONES.length)];
+    leakZone = z.key; leakState = "detecting"; leakTimer = 0; activeLeaks = 1;
+    bannerText = `⚠ Pressure anomaly · ${z.name} zone · AI analysing`;
+  }
+
+  function step() {
+    elapsed++;
+    const demandWave = 1 + Math.sin(elapsed/9)*0.12;
+    const leaking = leakState !== "none";
+    let sysFlow = 0;
+    ZONES.forEach(z => {
+      let f = z.base * demandWave * rand(0.96, 1.04);
+      if (leaking && leakZone === z.key) f *= 1.35;
+      zoneFlow[z.key] = f; sysFlow += f;
+    });
+    totalFlow = sysFlow;
+
+    const targetPres = 6.4 - (demandWave-1)*3 - (leaking ? 0.9 : 0);
+    avgPressure = clamp(avgPressure + (targetPres - avgPressure)*0.3, 3.2, 7.5);
+    pumpEff += ((leaking ? 78 : 89) + rand(-1.5, 1.5) - pumpEff)*0.25;
+    const targetNRW = leaking ? 14 + rand(-1, 2) : 6.2 + rand(-0.6, 0.9);
+    nrw += (targetNRW - nrw)*0.2;
+
+    if (leakState === "none") {
+      if (srandom() < 0.06) startLeak();
+    } else {
+      leakTimer++;
+      const z = ZONES.find(x => x.key === leakZone);
+      if (leakState === "detecting" && leakTimer >= 3) { leakState = "dispatched"; leakTimer = 0; bannerText = `🚑 AI dispatched crew · ${z.name} · isolating`; }
+      else if (leakState === "dispatched" && leakTimer >= 5) { leakState = "none"; activeLeaks = 0; bannerText = `✓ ${z.name} leak isolated · network nominal`; leakZone = null; }
+    }
+
+    paintNodes(); renderKPIs(); pushCharts();
+  }
+
+  function paintNodes() {
+    ZONES.forEach(z => {
+      const el = document.querySelector(`[data-zoneflow="${z.key}"]`);
+      if (el) el.textContent = Math.round(zoneFlow[z.key]);
+      const tag = document.querySelector(`.node-tag[data-zone="${z.key}"]`);
+      if (tag) tag.classList.toggle("leak", leakZone === z.key && leakState !== "none");
+    });
+    const pump = document.getElementById("h-pump"); if (pump) pump.textContent = Math.round(pumpEff)+"%";
+    const bt = document.getElementById("h-banner-text"); if (bt) bt.textContent = bannerText;
+    const banner = document.getElementById("h-banner"); if (banner) banner.classList.toggle("alert", leakState !== "none");
+    const sub = document.getElementById("h-net-sub"); if (sub) sub.textContent = leakState !== "none" ? "anomaly response active" : "all zones nominal";
+  }
+
+  function renderKPIs() {
+    const predicted = clamp(1 + (nrw>10?1:0) + activeLeaks + (Math.sin(elapsed/13) > 0.55 ? 1 : 0), 0, 4);
+    const cards = [
+      { i:"💧", l:"Total Flow", v:Math.round(totalFlow)+" L/s", s:"across network", c:"" },
+      { i:"🎚️", l:"Avg Pressure", v:avgPressure.toFixed(1)+" bar", s: avgPressure<4.5?"low":"nominal", c: avgPressure<4.5?"down":"up" },
+      { i:"🚨", l:"Active Leaks", v:activeLeaks, s: activeLeaks?"AI responding":"none detected", c: activeLeaks?"down":"up" },
+      { i:"📉", l:"Non-Revenue Water", v:nrw.toFixed(1)+"%", s: nrw>10?"above target":"within target", c: nrw>10?"down":"up" },
+      { i:"🛠️", l:"Predicted Failures", v:predicted, s:"next 7 days", c:"" },
+      { i:"⚙️", l:"Pump Efficiency", v:Math.round(pumpEff)+"%", s: pumpEff<82?"degraded":"optimal", c: pumpEff<82?"down":"up" },
+    ];
+    let html = cards.map(c => `<div class="card kpi"><div class="label"><span class="icon">${c.i}</span> ${c.l}</div>
+      <div class="value">${c.v}</div><div class="sub ${c.c}">${c.s}</div></div>`).join("");
+    html += `<div class="card kpi live"><div class="label"><span class="icon">🛰️</span> AI Monitoring</div>
+      <div class="value" style="font-size:22px">ACTIVE</div><div class="sub up">SCADA + anomaly AI</div></div>`;
+    document.getElementById("h-kpis").innerHTML = html;
+  }
+
+  function buildCharts() {
+    if (!HAS_CHART) return;
+    const f = document.getElementById("h-flow");
+    flowChart = new Chart(f, { type:"line",
+      data:{ labels, datasets:[
+        { label:"Flow L/s", data:flowHist, borderColor:cssVar("--accent"), backgroundColor:gradient(f,"14,165,233"), fill:true, tension:.35, borderWidth:2, pointRadius:0, yAxisID:"y" },
+        { label:"Pressure bar", data:presHist, borderColor:"#fbbf24", tension:.35, borderWidth:2, pointRadius:0, yAxisID:"y1" },
+      ]},
+      options: baseOpts({ scales:{
+        x:{ ticks:{display:false}, grid:{color:"rgba(255,255,255,0.04)"} },
+        y:{ position:"left", ticks:{color:"#9a95ad"}, grid:{color:"rgba(255,255,255,0.06)"}, title:{display:true,text:"L/s",color:"#9a95ad"} },
+        y1:{ position:"right", suggestedMin:2, suggestedMax:8, ticks:{color:"#9a95ad"}, grid:{drawOnChartArea:false}, title:{display:true,text:"bar",color:"#9a95ad"} },
+      }}) });
+
+    const z = document.getElementById("h-zones");
+    zoneChart = new Chart(z, { type:"bar",
+      data:{ labels:ZONES.map(x=>x.name), datasets:[{ label:"L/s", data:ZONES.map(x=>Math.round(zoneFlow[x.key])), backgroundColor:["#0ea5e9","#38bdf8","#22d3ee","#6366f1"], borderRadius:6, maxBarThickness:44 }] },
+      options: baseOpts({ plugins:{ legend:{display:false} }, scales:{ x:{ ticks:{color:"#9a95ad"}, grid:{display:false} }, y:{ beginAtZero:true, ticks:{color:"#9a95ad"}, grid:{color:"rgba(255,255,255,0.06)"} } } }) });
+
+    const n = document.getElementById("h-nrw");
+    nrwChart = new Chart(n, { type:"line",
+      data:{ labels, datasets:[
+        { label:"Pump Eff %", data:effHist, borderColor:"#34d399", backgroundColor:gradient(n,"52,211,153",250), fill:true, tension:.35, borderWidth:2, pointRadius:0 },
+        { label:"NRW %", data:nrwHist, borderColor:"#f43f5e", tension:.35, borderWidth:2, pointRadius:0, borderDash:[5,3] },
+      ]},
+      options: baseOpts({ scales:{ x:{ ticks:{display:false}, grid:{color:"rgba(255,255,255,0.04)"} }, y:{ suggestedMin:0, suggestedMax:100, ticks:{color:"#9a95ad"}, grid:{color:"rgba(255,255,255,0.06)"} } } }) });
+  }
+
+  function pushCharts() {
+    labels.push(""); flowHist.push(Math.round(totalFlow)); presHist.push(+avgPressure.toFixed(2));
+    nrwHist.push(+nrw.toFixed(1)); effHist.push(Math.round(pumpEff));
+    if (labels.length > 40) { labels.shift(); flowHist.shift(); presHist.shift(); nrwHist.shift(); effHist.shift(); }
+    if (!HAS_CHART) return;
+    if (flowChart) { flowChart.data.labels=labels; flowChart.data.datasets[0].data=flowHist; flowChart.data.datasets[1].data=presHist; flowChart.update("none"); }
+    if (zoneChart) { zoneChart.data.datasets[0].data=ZONES.map(x=>Math.round(zoneFlow[x.key])); zoneChart.update("none"); }
+    if (nrwChart) { nrwChart.data.labels=labels; nrwChart.data.datasets[0].data=effHist; nrwChart.data.datasets[1].data=nrwHist; nrwChart.update("none"); }
+  }
+
+  MODULES.hydro = {
+    enter() {
+      build();
+      if (labels.length === 0) { for (let k=0;k<8;k++) step(); }
+      buildCharts(); paintNodes(); renderKPIs();
+      timer = setInterval(step, 1500);
+    },
+    leave() {
+      clearInterval(timer);
+      [flowChart, zoneChart, nrwChart].forEach(c => { if (c) c.destroy(); });
+      flowChart = zoneChart = nrwChart = null;
+    },
+  };
+})();
+
+/* =================================================================
    "Why it saves money" dismissible notes (one per showcase)
    ================================================================= */
 const SAVINGS = {
@@ -1581,6 +2108,8 @@ const SAVINGS = {
   climate: { title: "How Room 7 saves money", text: "HVAC is a building's biggest energy cost. It runs only as hard as the room needs — idling when empty, ramping under load — so you cut energy bills while keeping people comfortable." },
   footfall:{ title: "How Flowcount saves money", text: "Match staffing and opening hours to real demand, optimise layout around peak flow, and prove space usage — so you avoid over-staffing and over-renting." },
   recycle: { title: "How ReVerra saves money", text: "Higher-purity streams sell for more and dodge contamination penalties; better recovery means lower landfill fees and stronger ESG/regulatory standing." },
+  support: { title: "How SupportPilot saves money", text: "An LLM copilot deflects routine tickets and drafts replies, so a smaller team clears more volume — cutting response times and cost-per-ticket while lifting CSAT." },
+  hydro:   { title: "How HydroGuard saves money", text: "Catching leaks and pressure anomalies early slashes non-revenue water losses, prevents burst-main damage, and lets you schedule maintenance before failures happen." },
 };
 
 function buildValueNotes() {
